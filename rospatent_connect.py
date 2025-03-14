@@ -59,8 +59,12 @@ class PatentSearch:
         """
         Выводит обработанные данные.
         """
+        arr = []
+
         for k, v in self.__parsed_data.items():
-            print(f"Title:\n\t{k}\n\nDescription:\n\t{v}\n\n{'-'*150}\n")
+            arr.append(v)
+
+        return arr
 
 
 if __name__ == "__main__":
