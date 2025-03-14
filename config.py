@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Config:
     URL_SEARCH = os.getenv("URL_SEARCH")
     API_KEY = os.getenv("API_KEY")
