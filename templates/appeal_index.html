@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Форма подачи заявления</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .container { background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+    h1 { text-align: center; margin-bottom: 1.5rem; font-size: 1.75rem; }
+    form { display: flex; flex-direction: column; }
+    label { margin-bottom: 0.5rem; font-weight: bold; }
+    .required { color: red; margin-left: 0.25rem; }
+    .checkbox-group, .inline-group, .link-group, .doc-group { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+    .inline-group { justify-content: space-between; }
+    input[type=text], input[type=email], input[type=url], input[type=file], textarea, select { padding: 0.5rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 4px; transition: border-color 0.3s; margin-bottom: 0.5rem; width: 100%; }
+    .inline-group input { width: calc(85% - 0.5rem); }
+    textarea { min-height: 100px; resize: vertical; }
+    input.invalid, select.invalid, textarea.invalid { border-color: red; }
+    .hidden { display: none; }
+    .error-message { color: red; font-size: 0.875rem; margin-top: -0.25rem; margin-bottom: 0.5rem; display: none; }
+    button { margin-top: 1rem; padding: 0.75rem; font-size: 1rem; border: none; border-radius: 4px; background-color: #007bff; color: #fff; cursor: pointer; transition: background-color 0.3s; }
+    button:hover { background-color: #0056b3; }
+    .add-link, .add-doc { align-self: flex-start; margin-top: 0; background-color: #28a745; }
+    .add-link:hover, .add-doc:hover { background-color: #218838; }
+    .remove-link, .remove-doc { background: transparent; border: none; cursor: pointer; font-size: 1.25rem; line-height: 1; color: #900; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Форма подачи заявления</h1>
+    <form action="/submit" method="post" enctype="multipart/form-data" id="application-form" novalidate>
+      <!-- ФИО -->
+      <label for="fio">Заявитель<span class="required">*</span></label>
+      <input type="text" id="fio" name="applicant" required placeholder="ФИО / ИП / Юр. лицо">
+      <span class="error-message">Поле обязательно для заполнения</span>
+
+      <!-- Юр. лицо -->
+      <label><input type="checkbox" id="is-company"> Заявитель является Юр. лицом</label>
+      <div id="inn-block" class="hidden">
+        <label for="inn">ИНН<span class="required">*</span></label>
+        <input type="text" id="inn" name="inn">
+        <span class="error-message">Поле ИНН обязательно для заполнения</span>
+      </div>
+
+      <!-- Чекбоксы правообладатель/представитель -->
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="rights-holder" name="rights_holder" checked> Являюсь правообладателем</label>
+        <label><input type="checkbox" id="representative" name="representative"> Действую как представитель</label>
+      </div>
+
+      <!-- Email -->
+      <label for="email">Email<span class="required">*</span></label>
+      <input type="email" id="email" name="email" required placeholder="example@example.com">
+      <span class="error-message">Введите корректный email</span>
+
+      <!-- Категория -->
+      <label for="category">Интеллектуальная собственность<span class="required">*</span></label>
+      <select id="category" name="ip_type" required>
+        <option value="">-- выберите категорию --</option>
+        <option value="trademarks">товарные знаки, бренды</option>
+        <option value="works">произведения</option>
+        <option value="patents">патенты</option>
+      </select>
+      <span class="error-message">Пожалуйста, выберите категорию</span>
+
+      <!-- Регистрация -->
+      <div id="registration-block" class="hidden">
+        <label for="registration-number">Номер регистрации</label>
+        <input type="text" id="registration-number" name="registration_number" placeholder="123456">
+      </div>
+
+      <!-- Ссылки -->
+      <label>Ссылки на товар<span class="required">*</span></label>
+      <div id="links-container">
+        <div class="link-group">
+          <input type="url" class="product-link" name="links" required placeholder="https://example.com">
+          <button type="button" class="remove-link hidden">×</button>
+        </div>
+        <span class="error-message">Введите корректную ссылку</span>
+      </div>
+      <button type="button" class="add-link">Добавить ссылку</button>
+
+      <!-- Магазин и ФИО продавца -->
+      <div class="inline-group">
+        <div>
+          <label for="store-name">Название магазина<span class="required">*</span></label>
+          <input type="text" id="store-name" name="violator_name" required>
+          <span class="error-message">Поле обязательно</span>
+        </div>
+        <div>
+          <label for="seller-fio">Продавец<span class="required">*</span></label>
+          <input type="text" id="seller-fio" name="violator_name" required placeholder="ФИО / ИП / Юр. лицо">
+          <span class="error-message">Поле обязательно</span>
+        </div>
+      </div>
+
+      <!-- Продавец компания -->
+      <label><input type="checkbox" id="seller-company"> Продавец юр. лицо или ИП</label>
+      <div id="ogrn-block" class="hidden">
+        <label for="ogrn">ОГРН<span class="required">*</span></label>
+        <input type="text" id="ogrn" name="ogrn">
+        <span class="error-message">Поле ОГРН обязательно</span>
+      </div>
+
+      <!-- Текст нарушения -->
+      <label for="violation-text">Текст нарушения<span class="required">*</span></label>
+      <textarea id="violation-text" name="description" required></textarea>
+      <span class="error-message">Поле обязательно для заполнения</span>
+
+      <!-- Документы -->
+      <label>Прикрепить документы</label>
+      <div id="docs-container">
+        <div class="doc-group">
+          <input type="file" name="evidence_docs" class="document-input" multiple>
+          <button type="button" class="remove-doc hidden">×</button>
+        </div>
+      </div>
+      <button type="button" class="add-doc">Добавить документ</button>
+
+      <!-- Новые поля для загрузки документов -->
+      <label for="ip-documents">Документы на объект интеллектуальной собственности</label>
+      <input type="file" id="ip-documents" name="ip-documents" multiple>
+
+      <label for="rep-documents">Документы на право представлять интересы заявителя</label>
+      <input type="file" id="rep-documents" name="rep-documents" multiple>
+
+      <button type="submit">Отправить</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('application-form');
+      const fields = {
+        fio:   { el: document.getElementById('fio'), err: document.querySelector('#fio + .error-message') },
+        isCompany:      document.getElementById('is-company'),
+        innBlock:       document.getElementById('inn-block'),
+        inn:   { el: document.getElementById('inn'), err: document.querySelector('#inn + .error-message') },
+        rights:         document.getElementById('rights-holder'),
+        rep:            document.getElementById('representative'),
+        email: { el: document.getElementById('email'), err: document.querySelector('#email + .error-message') },
+        category: { el: document.getElementById('category'), err: document.querySelector('#category + .error-message') },
+        regBlock:       document.getElementById('registration-block'),
+        links: { container: document.getElementById('links-container'), err: document.querySelector('#links-container + .error-message') },
+        store: { el: document.getElementById('store-name'), err: document.querySelector('#store-name + .error-message') },
+        sellerFio: { el: document.getElementById('seller-fio'), err: document.querySelector('#seller-fio + .error-message') },
+        sellerCompany:  document.getElementById('seller-company'),
+        ogrnBlock:      document.getElementById('ogrn-block'),
+        ogrn:   { el: document.getElementById('ogrn'), err: document.querySelector('#ogrn + .error-message') },
+        violation: { el: document.getElementById('violation-text'), err: document.querySelector('#violation-text + .error-message') },
+        docs: { container: document.getElementById('docs-container') }
+      };
+
+      // ИНН
+      fields.isCompany.addEventListener('change', () => {
+        fields.innBlock.classList.toggle('hidden', !fields.isCompany.checked);
+        fields.inn.el.required = fields.isCompany.checked;
+        if (!fields.isCompany.checked) {
+          fields.inn.el.classList.remove('invalid');
+          fields.inn.err.style.display = 'none';
+        }
+      });
+
+      // Право/представитель
+      fields.rights.addEventListener('change', () => {
+        if (fields.rights.checked) fields.rep.checked = false;
+        else fields.rights.checked = true;
+      });
+      fields.rep.addEventListener('change', () => {
+        if (fields.rep.checked) fields.rights.checked = false;
+        else if (!fields.rights.checked) fields.rights.checked = true;
+      });
+
+      // Категория → регистрация
+      fields.category.el.addEventListener('change', () => {
+        const v = fields.category.el.value;
+        fields.regBlock.classList.toggle('hidden', !(v === 'trademarks' || v === 'patents'));
+        fields.category.el.classList.remove('invalid');
+        fields.category.err.style.display = 'none';
+      });
+
+      // Динамические ссылки
+      function updateLinkButtons() {
+        const groups = fields.links.container.querySelectorAll('.link-group');
+        groups.forEach((g,i) => g.querySelector('.remove-link').classList.toggle('hidden', i === 0));
+      }
+      function addLink() {
+        const group = document.createElement('div'); group.className = 'link-group';
+        const inp = document.createElement('input'); inp.type = 'url'; inp.required = true; inp.className = 'product-link'; inp.placeholder = 'https://example.com';
+        const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'remove-link'; btn.textContent = '×';
+        btn.addEventListener('click', () => { group.remove(); updateLinkButtons(); });
+        group.append(inp, btn);
+        fields.links.container.appendChild(group);
+        updateLinkButtons();
+      }
+      document.querySelector('.add-link').addEventListener('click', addLink);
+      updateLinkButtons();
+
+      // Продавец → ОГРН
+      fields.sellerCompany.addEventListener('change', () => {
+        fields.ogrnBlock.classList.toggle('hidden', !fields.sellerCompany.checked);
+        fields.ogrn.el.required = fields.sellerCompany.checked;
+        if (!fields.sellerCompany.checked) {
+          fields.ogrn.el.classList.remove('invalid');
+          fields.ogrn.err.style.display = 'none';
+        }
+      });
+
+      // Динамические документы
+      function updateDocButtons() {
+        const groups = fields.docs.container.querySelectorAll('.doc-group');
+        groups.forEach((g,i) => g.querySelector('.remove-doc').classList.toggle('hidden', i === 0));
+      }
+      function addDoc() {
+        const group = document.createElement('div'); group.className = 'doc-group';
+        const inp = document.createElement('input'); inp.type = 'file'; inp.className = 'document-input';
+        const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'remove-doc'; btn.textContent = '×';
+        btn.addEventListener('click', () => { group.remove(); updateDocButtons(); });
+        group.append(inp, btn);
+        fields.docs.container.appendChild(group);
+        updateDocButtons();
+      }
+      document.querySelector('.add-doc').addEventListener('click', addDoc);
+      updateDocButtons();
+
+      // Валидация при отправке
+      form.addEventListener('submit', e => {
+        let ok = true;
+
+        if (!fields.fio.el.value.trim()) {
+          ok = false;
+          fields.fio.el.classList.add('invalid');
+          fields.fio.err.style.display = 'block';
+        }
+        if (fields.isCompany.checked && !fields.inn.el.value.trim()) {
+          ok = false;
+          fields.inn.el.classList.add('invalid');
+          fields.inn.err.style.display = 'block';
+        }
+        const emailRe = /^\S+@\S+\.\S+$/;
+        if (!emailRe.test(fields.email.el.value.trim())) {
+          ok = false;
+          fields.email.el.classList.add('invalid');
+          fields.email.err.style.display = 'block';
+        }
+        if (!fields.category.el.value) {
+          ok = false;
+          fields.category.el.classList.add('invalid');
+          fields.category.err.style.display = 'block';
+        }
+        const linkInputs = fields.links.container.querySelectorAll('.product-link');
+        fields.links.err.style.display = 'none';
+        linkInputs.forEach(inp => {
+          if (!/^https?:\/\/.+/.test(inp.value.trim())) {
+            ok = false;
+            inp.classList.add('invalid');
+            fields.links.err.style.display = 'block';
+          }
+        });
+        if (!fields.store.el.value.trim()) {
+          ok = false;
+          fields.store.el.classList.add('invalid');
+          fields.store.err.style.display = 'block';
+        }
+        if (!fields.sellerFio.el.value.trim()) {
+          ok = false;
+          fields.sellerFio.el.classList.add('invalid');
+          fields.sellerFio.err.style.display = 'block';
+        }
+        if (fields.sellerCompany.checked && !fields.ogrn.el.value.trim()) {
+          ok = false;
+          fields.ogrn.el.classList.add('invalid');
+          fields.ogrn.err.style.display = 'block';
+        }
+        if (!fields.violation.el.value.trim()) {
+          ok = false;
+          fields.violation.el.classList.add('invalid');
+          fields.violation.err.style.display = 'block';
+        }
+
+        if (!ok) e.preventDefault();
+      });
+
+      // Очистка ошибок при вводе
+      document.querySelectorAll('input, textarea, select').forEach(el => {
+        el.addEventListener('input', () => {
+          el.classList.remove('invalid');
+          const err = el.nextElementSibling;
+          if (err && err.classList.contains('error-message')) err.style.display = 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
