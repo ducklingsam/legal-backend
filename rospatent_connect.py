@@ -1,5 +1,4 @@
 import requests
-import time
 from config import *
 
 
@@ -11,6 +10,7 @@ class PatentSearch:
         __key (str): API-ключ для аутентификации.
         __data (dict | None): Хранит данные ответа API после поиска.
     """
+
     def __init__(self, api_key=Config.API_KEY):
         """
         Инициализирует объект поиска патентов.
@@ -33,9 +33,9 @@ class PatentSearch:
         """
         for hit in self.__data.get("hits", {}):
             title = hit.get("snippet", {}).get("title", None)
-            desc = hit.get("snippet", {}).get("description", None)  
+            desc = hit.get("snippet", {}).get("description", None)
             self.__parsed_data[title] = desc
-    
+
     def search_by_natural(self, query=Config.EXAMPLE_QUERY, headers=Config.EXAMPLE_HEADERS, url="https://searchplatform.rospatent.gov.ru/patsearch/v0.2/search"):
         """
         Выполняет поиск патентов по естественному языковому запросу.
@@ -48,31 +48,13 @@ class PatentSearch:
         Метод отправляет POST-запрос к API, получает ответ и передаёт данные
         в метод json_parse(). В случае ошибки выводит сообщение с кодом ответа.
         """
-        cnt = 1
-        for try_ in range(10):
-            try:
-                resp = requests.post(url, json=query, headers=headers)
-                resp.raise_for_status()
-                # logger.info(f"Successfully searched for {payload}")
-                self.__data = resp.json()
-                self.parse_json()
-                return
-            
-            except Exception as e:
-                # logger.warning(f'Error while searching: {e}. Retrying {try_ + 1}/{tries} in 1 sec')
-                print(f"№{cnt}: Ошибка {resp.status_code}: {resp.text}")
-                cnt += 1
-                time.sleep(1)
-        # response = requests.post(url, json=query, headers=headers)
-        
-        # if response.status_code == 200:
-        #     self.__data = response.json()
-        #     self.parse_json()  
-        # else:
-        #     print(f"Ошибка {response.status_code}: {response.text}")
+        response = requests.post(url, json=query, headers=headers)
 
-    def search_info_by_id(self, ):
-        pass
+        if response.status_code == 200:
+            self.__data = response.json()
+            self.parse_json()
+        else:
+            print(f"Ошибка {response.status_code}: {response.text}")
 
     def get_parsed_data(self,):
         """

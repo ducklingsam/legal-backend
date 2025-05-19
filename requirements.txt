@@ -1,3 +1,10 @@
-fastapi==0.115.11
-python-dotenv==1.0.1
+fastapi==0.115.12
+nltk==3.9.1
+pymorphy2==0.9.1
+python-dotenv==1.1.0
 Requests==2.32.3
+sentence_transformers==2.2.2
+SQLAlchemy==2.0.41
+torch==2.6.0
+weasyprint==65.1
+yake==0.4.8
