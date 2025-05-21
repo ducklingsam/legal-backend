@@ -1,6 +1,24 @@
 # LegalTech Bot
 
-Brief description of what your project does and its purpose.
+This project showcases the creation of an online platform designed to auto-
+mate the submission of appeals regarding IP violations and to conduct semantic
+similarity searches for patent descriptions. The system features an interactive
+HTML form equipped with conditional logic to gather all required appeal details,
+along with a FastAPI backend that manages data validation, storage, and email
+alerts.
+A crucial element of the system is the semantic comparison pipeline, which cor-
+relates user-provided descriptions to patents from the Rospatent database. To
+improve precision, the system incorporates a keyword extraction phase utilizing
+the YAKE algorithm and applies morphological filtering through pymorphy2. A
+SBERT model is utilized for similarity estimation and is additionally fine-tuned
+using Russian patent texts classified by IPC codes. The evaluation findings indi-
+cate that the fine-tuned model outperforms the original SBERT baselines, attain-
+ing a greater Recall@1 and a reduced mean rank.
+The system autonomously creates a PDF report that emphasizes corresponding
+segments between the user’s text and the closest related patent. The proposed
+solution enhances the relevance of semantic search results and simplifies the IP
+violation appeal procedure, thus making it more efficient and user-friendly for
+both applicants and legal experts.
 
 ## Table of Contents
 
